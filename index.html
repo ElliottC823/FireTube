@@ -1,1 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireTube</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #e55a24;
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #282828;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border: #2a2a2a;
+            --accent: #3ea6ff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode {
+            --bg-primary: #f9f9f9;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0f0f0;
+            --text-primary: #030303;
+            --text-secondary: #606060;
+            --border: #e0e0e0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .sidebar {
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        .nav-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-tertiary);
+            border-radius: 24px;
+            padding: 0 16px;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--primary);
+            background-color: var(--bg-primary);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: none;
+            color: var(--text-primary);
+            padding: 10px 0;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-icon {
+            width: 18px;
+            height: 18px;
+            stroke: var(--text-secondary);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--bg-tertiary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .icon-btn:hover {
+            background-color: var(--border);
+            color: var(--text-primary);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .for-you-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .video-card {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.2);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-icon-overlay {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: rgba(255, 107, 53, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .video-card:hover .play-icon-overlay {
+            opacity: 1;
+        }
+
+        .play-icon-overlay svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .video-info {
+            padding: 12px;
+        }
+
+        .video-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .player-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .player-wrapper {
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .player-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .player-info {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .player-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .player-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            background-color: var(--border);
+        }
+
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .settings-panel {
+            max-width: 600px;
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .settings-group {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .settings-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background-color: var(--bg-tertiary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-switch.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .toggle-switch .toggle-thumb {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: left 0.2s ease;
+        }
+
+        .toggle-switch.active .toggle-thumb {
+            left: 22px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--bg-primary);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert.success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .alert.error {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .alert.info {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+            border: 1px solid #2196f3;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-tertiary);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 80px 1fr;
+            }
+
+            .sidebar {
+                padding: 12px;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            .for-you-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .for-you-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 10px 15px;
+            }
+
+            .content-area {
+                padding: 15px;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            stroke: currentColor;
+            stroke-width: 1;
+            fill: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>FireTube</span>
+            </div>
+            <nav class="nav-items">
+                <button class="nav-item active" data-page="for-you">
+                    <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+                    <span>For You</span>
+                </button>
+                <button class="nav-item" data-page="watch">
+                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"></polygon></svg>
+                    <span>Watch</span>
+                </button>
+                <button class="nav-item" data-page="history">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>History</span>
+                </button>
+                <button class="nav-item" data-page="favorites">
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 10.26 24 10.35 17.55 16.54 19.64 24.76 12 19.31 4.36 24.76 6.45 16.54 0 10.35 8.91 10.26"></polygon></svg>
+                    <span>Favorites</span>
+                </button>
+                <button class="nav-item" data-page="settings">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </aside>
+
+        <div class="main-content">
+            <header class="header">
+                <div class="search-bar">
+                    <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                    <input type="text" id="search-input" placeholder="Search videos...">
+                </div>
+                <div class="header-controls">
+                    <button class="icon-btn" id="theme-toggle" title="Toggle theme">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div id="for-you" class="page active">
+                    <h2 style="margin-bottom: 20px; font-size: 20px;">For You</h2>
+                    <div class="for-you-grid" id="for-you-grid">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading personalized recommendations...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="watch" class="page">
+                    <div class="player-container">
+                        <div class="player-wrapper">
+                            <iframe id="video-player" src="" allowfullscreen></iframe>
+                        </div>
+                        <div class="player-info">
+                            <div class="player-title" id="player-title">Select a video to play</div>
+                            <div class="player-stats" id="player-stats"></div>
+                            <div class="player-actions">
+                                <button class="action-btn" id="like-btn">
+                                    <svg viewBox="0 0 24 24"><path d="M14 9V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-4M15 19h6a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-6"></path></svg>
+                                    <span>Like</span>
+                                </button>
+                                <button class="action-btn" id="favorite-btn">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 10.26 24 10.35 17.55 16.54 19.64 24.76 12 19.31 4.36 24.76 6.45 16.54 0 10.35 8.91 10.26"></polygon></svg>
+                                    <span>Favorite</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="history" class="page">
+                    <h2 style="margin-bottom: 20px; font-size: 20px;">Watch History</h2>
+                    <div id="history-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+                </div>
+
+                <div id="favorites" class="page">
+                    <h2 style="margin-bottom: 20px; font-size: 20px;">Favorite Videos</h2>
+                    <div id="favorites-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+                </div>
+
+                <div id="settings" class="page">
+                    <div class="settings-panel">
+                        <div class="settings-group">
+                            <div class="settings-title">YouTube API Key</div>
+                            <input type="password" id="api-key-input" class="input-field" placeholder="Enter your YouTube Data API key">
+                            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Get your API key from <a href="https://console.cloud.google.com" target="_blank" style="color: var(--primary);">Google Cloud Console</a></p>
+                            <button class="btn-primary" id="save-api-key">Save API Key</button>
+                        </div>
+
+                        <div class="settings-group">
+                            <div class="settings-title">Appearance</div>
+                            <div class="setting-item">
+                                <span class="setting-label">Dark Mode</span>
+                                <div class="toggle-switch active" id="dark-mode-toggle">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <div class="settings-title">Player Settings</div>
+                            <div class="setting-item">
+                                <span class="setting-label">Autoplay</span>
+                                <div class="toggle-switch active" id="autoplay-toggle">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <span class="setting-label">Quality</span>
+                                <select id="quality-select" class="input-field" style="margin-top: 0;">
+                                    <option value="auto">Auto</option>
+                                    <option value="720p">720p</option>
+                                    <option value="1080p">1080p</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <div class="settings-title">Data</div>
+                            <button class="btn-primary" id="clear-history-btn" style="background-color: #f44336;">Clear Watch History</button>
+                            <button class="btn-primary" id="export-btn" style="margin-top: 8px; background-color: var(--accent);">Export Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="api-key-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Setup Required</span>
+                <button class="close-btn">&times;</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">To use FireTube, you need a YouTube Data API key. Get one free from Google Cloud Console.</p>
+            <input type="password" id="modal-api-key" class="input-field" placeholder="Paste your API key here">
+            <button class="btn-primary" id="modal-save-btn">Start Using FireTube</button>
+        </div>
+    </div>
+
+    <script>
+        class FireTube {
+            constructor() {
+                this.apiKey = localStorage.getItem('yt-api-key') || '';
+                this.watchHistory = JSON.parse(localStorage.getItem('watch-history') || '[]');
+                this.favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                this.theme = localStorage.getItem('theme') || 'dark';
+                this.currentVideo = null;
+                this.recommendations = [];
+
+                this.init();
+            }
+
+            init() {
+                this.setupTheme();
+                this.setupEventListeners();
+                this.checkApiKey();
+                this.loadForYouPage();
+            }
+
+            setupTheme() {
+                if (this.theme === 'light') {
+                    document.body.classList.add('light-mode');
+                }
+            }
+
+            setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('[data-page]').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchPage(e.target.closest('[data-page]').dataset.page));
+                });
+
+                // Search
+                document.getElementById('search-input').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.search(e.target.value);
+                    }
+                });
+
+                // Theme toggle
+                document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
+
+                // Settings
+                document.getElementById('save-api-key').addEventListener('click', () => this.saveApiKey());
+                document.getElementById('dark-mode-toggle').addEventListener('click', () => this.toggleTheme());
+                document.getElementById('clear-history-btn').addEventListener('click', () => this.clearHistory());
+                document.getElementById('export-btn').addEventListener('click', () => this.exportData());
+
+                // Modal
+                document.getElementById('modal-save-btn').addEventListener('click', () => this.saveApiKeyFromModal());
+                document.querySelector('.close-btn').addEventListener('click', () => this.closeModal());
+
+                // Player actions
+                document.getElementById('like-btn').addEventListener('click', () => this.likeVideo());
+                document.getElementById('favorite-btn').addEventListener('click', () => this.addToFavorites());
+
+                // Populate API key input
+                const apiInput = document.getElementById('api-key-input');
+                if (this.apiKey) {
+                    apiInput.value = this.apiKey;
+                }
+            }
+
+            checkApiKey() {
+                if (!this.apiKey) {
+                    this.showModal();
+                } else {
+                    this.closeModal();
+                }
+            }
+
+            showModal() {
+                document.getElementById('api-key-modal').classList.add('active');
+            }
+
+            closeModal() {
+                document.getElementById('api-key-modal').classList.remove('active');
+            }
+
+            saveApiKey() {
+                const key = document.getElementById('api-key-input').value.trim();
+                if (key) {
+                    this.apiKey = key;
+                    localStorage.setItem('yt-api-key', key);
+                    this.closeModal();
+                    this.showAlert('API key saved successfully!', 'success');
+                    this.loadForYouPage();
+                } else {
+                    this.showAlert('Please enter a valid API key', 'error');
+                }
+            }
+
+            saveApiKeyFromModal() {
+                const key = document.getElementById('modal-api-key').value.trim();
+                if (key) {
+                    this.apiKey = key;
+                    localStorage.setItem('yt-api-key', key);
+                    document.getElementById('api-key-input').value = key;
+                    this.closeModal();
+                    this.showAlert('API key saved successfully!', 'success');
+                    this.loadForYouPage();
+                } else {
+                    this.showAlert('Please enter a valid API key', 'error');
+                }
+            }
+
+            toggleTheme() {
+                this.theme = this.theme === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', this.theme);
+                document.body.classList.toggle('light-mode');
+            }
+
+            switchPage(page) {
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('[data-page]').forEach(btn => btn.classList.remove('active'));
+
+                document.getElementById(page).classList.add('active');
+                document.querySelector(`[data-page="${page}"]`).classList.add('active');
+
+                if (page === 'history') {
+                    this.loadHistory();
+                } else if (page === 'favorites') {
+                    this.loadFavorites();
+                }
+            }
+
+            async search(query) {
+                if (!this.apiKey) {
+                    this.showAlert('Please set your API key in settings', 'error');
+                    return;
+                }
+
+                const grid = document.getElementById('for-you-grid');
+                grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
+
+                try {
+                    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&key=${this.apiKey}`);
+                    const data = await response.json();
+
+                    if (data.items) {
+                        this.displayVideos(data.items, grid);
+                    } else {
+                        grid.innerHTML = '<div class="empty-state"><p>No results found</p></div>';
+                    }
+                } catch (error) {
+                    this.showAlert('Search failed: ' + error.message, 'error');
+                }
+            }
+
+            async loadForYouPage() {
+                if (!this.apiKey) {
+                    document.getElementById('for-you-grid').innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg><p>Set your API key to get started</p></div>';
+                    return;
+                }
+
+                const defaultSearches = ['trending', 'popular', 'new releases'];
+                const search = defaultSearches[Math.floor(Math.random() * defaultSearches.length)];
+
+                try {
+                    const response = await fetch(`/api/search?q=${encodeURIComponent(search)}&key=${this.apiKey}`);
+                    const data = await response.json();
+
+                    if (data.items) {
+                        this.recommendations = data.items;
+                        this.displayVideos(data.items, document.getElementById('for-you-grid'));
+                    }
+                } catch (error) {
+                    console.error('Error loading for you page:', error);
+                }
+            }
+
+            displayVideos(videos, container) {
+                container.innerHTML = '';
+                videos.forEach(video => {
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    const videoId = video.id.videoId;
+                    const snippet = video.snippet;
+
+                    card.innerHTML = `
+                        <div class="video-thumbnail">
+                            <img src="${snippet.thumbnails.medium.url}" alt="${snippet.title}">
+                            <div class="play-icon-overlay">
+                                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"></polygon></svg>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${snippet.title}</div>
+                            <div class="video-meta">
+                                <span>${snippet.channelTitle}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    card.addEventListener('click', () => this.playVideo(videoId, snippet));
+                    container.appendChild(card);
+                });
+            }
+
+            playVideo(videoId, snippet) {
+                this.currentVideo = { id: videoId, snippet };
+                document.getElementById('video-player').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                document.getElementById('player-title').textContent = snippet.title;
+                document.getElementById('player-stats').innerHTML = `
+                    <span>${snippet.channelTitle}</span>
+                    <span>${new Date(snippet.publishedAt).toLocaleDateString()}</span>
+                `;
+
+                // Add to watch history
+                this.addToHistory(videoId, snippet);
+
+                // Switch to watch page
+                this.switchPage('watch');
+            }
+
+            addToHistory(videoId, snippet) {
+                this.watchHistory = this.watchHistory.filter(v => v.id !== videoId);
+                this.watchHistory.unshift({ id: videoId, snippet, watchedAt: new Date().toISOString() });
+                this.watchHistory = this.watchHistory.slice(0, 100);
+                localStorage.setItem('watch-history', JSON.stringify(this.watchHistory));
+            }
+
+            loadHistory() {
+                const historyList = document.getElementById('history-list');
+                if (this.watchHistory.length === 0) {
+                    historyList.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><p>No watch history yet</p></div>';
+                    return;
+                }
+                this.displayVideos(
+                    this.watchHistory.map(h => ({ id: { videoId: h.id }, snippet: h.snippet })),
+                    historyList
+                );
+            }
+
+            addToFavorites() {
+                if (!this.currentVideo) {
+                    this.showAlert('No video selected', 'error');
+                    return;
+                }
+
+                const exists = this.favorites.some(f => f.id === this.currentVideo.id);
+                if (exists) {
+                    this.favorites = this.favorites.filter(f => f.id !== this.currentVideo.id);
+                    this.showAlert('Removed from favorites', 'info');
+                } else {
+                    this.favorites.push(this.currentVideo);
+                    this.showAlert('Added to favorites', 'success');
+                }
+                localStorage.setItem('favorites', JSON.stringify(this.favorites));
+            }
+
+            loadFavorites() {
+                const favoritesList = document.getElementById('favorites-list');
+                if (this.favorites.length === 0) {
+                    favoritesList.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><p>No favorite videos yet</p></div>';
+                    return;
+                }
+                this.displayVideos(
+                    this.favorites.map(f => ({ id: { videoId: f.id }, snippet: f.snippet })),
+                    favoritesList
+                );
+            }
+
+            likeVideo() {
+                if (this.currentVideo) {
+                    this.showAlert('Video liked!', 'success');
+                }
+            }
+
+            clearHistory() {
+                if (confirm('Are you sure you want to clear your watch history?')) {
+                    this.watchHistory = [];
+                    localStorage.setItem('watch-history', JSON.stringify(this.watchHistory));
+                    this.showAlert('Watch history cleared', 'success');
+                }
+            }
+
+            exportData() {
+                const data = {
+                    history: this.watchHistory,
+                    favorites: this.favorites,
+                    exportedAt: new Date().toISOString()
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `firetube-data-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                this.showAlert('Data exported', 'success');
+            }
+
+            showAlert(message, type) {
+                const header = document.querySelector('.header');
+                const alert = document.createElement('div');
+                alert.className = `alert ${type}`;
+                alert.innerHTML = `<span>${message}</span>`;
+                header.appendChild(alert);
+                setTimeout(() => alert.remove(), 3000);
+            }
+        }
+
+        const app = new FireTube();
+    </script>
+</body>
+</html>
 
