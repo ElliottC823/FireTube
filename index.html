@@ -320,32 +320,105 @@
         }
 
         .player-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             margin-bottom: 12px;
             color: var(--text-primary);
+            line-height: 1.4;
         }
 
         .player-stats {
             display: flex;
-            gap: 20px;
+            gap: 12px;
             margin-bottom: 16px;
             font-size: 13px;
             color: var(--text-secondary);
         }
 
+        .channel-section {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .channel-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: space-between;
+        }
+
+        .channel-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--bg-tertiary);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .channel-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .channel-details {
+            flex: 1;
+        }
+
+        .channel-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .channel-subs {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .subscribe-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .subscribe-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .subscribe-btn.subscribed {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .subscribe-btn.subscribed:hover {
+            background-color: var(--border);
+        }
+
         .player-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
 
         .action-btn {
-            flex: 1;
-            padding: 10px 16px;
+            padding: 8px 16px;
             border: 1px solid var(--border);
             background-color: var(--bg-tertiary);
             color: var(--text-primary);
-            border-radius: 6px;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -354,10 +427,15 @@
             gap: 8px;
             font-size: 13px;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .action-btn:hover {
             background-color: var(--border);
+        }
+
+        .action-btn.active {
+            color: var(--primary);
         }
 
         .action-btn svg {
@@ -366,6 +444,17 @@
             stroke: currentColor;
             stroke-width: 2;
             fill: none;
+        }
+
+        .video-description {
+            background-color: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         .settings-panel {
@@ -658,6 +747,19 @@
             .for-you-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
+
+            #channels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+            }
+
+            .channel-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .subscribe-btn {
+                width: 100%;
+            }
         }
 
         @media (max-width: 640px) {
@@ -673,12 +775,38 @@
                 grid-template-columns: 1fr;
             }
 
+            #channels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+            }
+
             .header {
                 padding: 10px 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-bar {
+                max-width: 100%;
             }
 
             .content-area {
                 padding: 15px;
+            }
+
+            .player-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                flex: 1;
+            }
+
+            .channel-info {
+                flex-wrap: wrap;
+            }
+
+            .subscribe-btn {
+                width: 100%;
             }
         }
 
@@ -696,6 +824,79 @@
             stroke: currentColor;
             stroke-width: 1;
             fill: none;
+        }
+
+        .channel-card {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.2);
+        }
+
+        .channel-card-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--bg-tertiary);
+            margin-bottom: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .channel-card-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .channel-card-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+
+        .channel-card-stats {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .channel-card-subscribe {
+            width: 100%;
+            padding: 8px 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .channel-card-subscribe:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .channel-card-subscribe.subscribed {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
         }
     </style>
 </head>
@@ -716,6 +917,10 @@
                 <button class="nav-item" data-page="watch">
                     <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21"></polygon></svg>
                     <span>Watch</span>
+                </button>
+                <button class="nav-item" data-page="subscriptions">
+                    <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    <span>Subscriptions</span>
                 </button>
                 <button class="nav-item" data-page="channels">
                     <svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
@@ -758,6 +963,11 @@
                             <p>Loading personalized recommendations...</p>
                         </div>
                     </div>
+                </div>
+
+                <div id="channels" class="page">
+                    <h2 style="margin-bottom: 20px; font-size: 20px;">Subscribed Channels</h2>
+                    <div id="channels-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;"></div>
                 </div>
 
                 <div id="watch" class="page">
@@ -885,10 +1095,13 @@
                 this.apiKey = localStorage.getItem('yt-api-key') || '';
                 this.watchHistory = JSON.parse(localStorage.getItem('watch-history') || '[]');
                 this.favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                this.subscriptions = JSON.parse(localStorage.getItem('subscriptions') || '[]');
                 this.theme = localStorage.getItem('theme') || 'dark';
                 this.playerScale = parseInt(localStorage.getItem('player-scale') || '100');
                 this.currentVideo = null;
+                this.currentChannel = null;
                 this.recommendations = [];
+                this.likes = JSON.parse(localStorage.getItem('likes') || '[]');
 
                 this.init();
             }
@@ -955,7 +1168,10 @@
 
                 // Player actions
                 document.getElementById('like-btn').addEventListener('click', () => this.likeVideo());
+                document.getElementById('dislike-btn').addEventListener('click', () => this.dislikeVideo());
+                document.getElementById('share-btn').addEventListener('click', () => this.shareVideo());
                 document.getElementById('favorite-btn').addEventListener('click', () => this.addToFavorites());
+                document.getElementById('subscribe-btn').addEventListener('click', () => this.toggleSubscription());
 
                 // Populate API key input
                 const apiInput = document.getElementById('api-key-input');
@@ -1024,7 +1240,52 @@
                     this.loadHistory();
                 } else if (page === 'favorites') {
                     this.loadFavorites();
+                } else if (page === 'channels') {
+                    this.loadChannels();
                 }
+            }
+
+            loadChannels() {
+                const channelsGrid = document.getElementById('channels-grid');
+
+                if (this.subscriptions.length === 0) {
+                    channelsGrid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg><p>No subscriptions yet. Subscribe to channels to see them here.</p></div>';
+                    return;
+                }
+
+                channelsGrid.innerHTML = '';
+                this.subscriptions.forEach(channel => {
+                    const card = document.createElement('div');
+                    card.className = 'channel-card';
+                    card.innerHTML = `
+                        <div class="channel-card-avatar">
+                            ${channel.thumbnail ? `<img src="${channel.thumbnail}" alt="${channel.name}">` : '<div style="width: 100%; height: 100%; background: var(--bg-tertiary);"></div>'}
+                        </div>
+                        <div class="channel-card-name">${channel.name}</div>
+                        <div class="channel-card-stats">Subscribed</div>
+                        <button class="channel-card-subscribe subscribed" data-channel-id="${channel.id}">Subscribed</button>
+                    `;
+
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('channel-card-subscribe')) {
+                            this.searchChannelVideos(channel.name);
+                        }
+                    });
+
+                    card.querySelector('.channel-card-subscribe').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.subscriptions = this.subscriptions.filter(sub => sub.id !== channel.id);
+                        localStorage.setItem('subscriptions', JSON.stringify(this.subscriptions));
+                        this.loadChannels();
+                        this.showAlert('Unsubscribed', 'info');
+                    });
+
+                    channelsGrid.appendChild(card);
+                });
+            }
+
+            searchChannelVideos(channelName) {
+                this.search(channelName);
             }
 
             async search(query) {
@@ -1056,20 +1317,95 @@
                     return;
                 }
 
-                const defaultSearches = ['trending', 'popular', 'new releases'];
-                const search = defaultSearches[Math.floor(Math.random() * defaultSearches.length)];
+                const forYouGrid = document.getElementById('for-you-grid');
+                forYouGrid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading personalized recommendations...</p></div>';
 
                 try {
-                    const response = await fetch(`/api/search?q=${encodeURIComponent(search)}&key=${this.apiKey}`);
-                    const data = await response.json();
+                    let searchQueries = [];
 
-                    if (data.items) {
-                        this.recommendations = data.items;
-                        this.displayVideos(data.items, document.getElementById('for-you-grid'));
+                    // Get personalized recommendations based on watch history
+                    if (this.watchHistory.length > 0) {
+                        searchQueries = this.getPersonalizedSearchQueries();
                     }
+
+                    // Add some trending content for variety
+                    const defaultSearches = ['trending', 'popular music', 'technology'];
+                    searchQueries = searchQueries.concat(defaultSearches);
+
+                    // Fetch recommendations for each query
+                    const allVideos = [];
+                    const queriesPerPage = 3;
+
+                    for (let i = 0; i < Math.min(queriesPerPage, searchQueries.length); i++) {
+                        try {
+                            const response = await fetch(`/api/search?q=${encodeURIComponent(searchQueries[i])}&key=${this.apiKey}`);
+                            const data = await response.json();
+
+                            if (data.items) {
+                                allVideos.push(...data.items);
+                            }
+                        } catch (error) {
+                            console.error(`Error fetching ${searchQueries[i]}:`, error);
+                        }
+                    }
+
+                    // Remove duplicates
+                    const uniqueVideos = Array.from(new Map(allVideos.map(v => [v.id.videoId, v])).values());
+                    // Shuffle to show variety
+                    const shuffled = uniqueVideos.sort(() => Math.random() - 0.5);
+
+                    this.recommendations = shuffled.slice(0, 30);
+                    this.displayVideos(this.recommendations, forYouGrid);
                 } catch (error) {
                     console.error('Error loading for you page:', error);
+                    forYouGrid.innerHTML = '<div class="empty-state"><p>Error loading recommendations</p></div>';
                 }
+            }
+
+            getPersonalizedSearchQueries() {
+                // Extract keywords from watched videos
+                const keywords = [];
+                const channelNames = [];
+
+                // Analyze recent watch history (last 20 videos)
+                const recentHistory = this.watchHistory.slice(0, 20);
+
+                recentHistory.forEach(item => {
+                    if (item.snippet) {
+                        // Extract title words
+                        const title = item.snippet.title.toLowerCase();
+                        const words = title.split(/[\s\-|:,()]+/).filter(w => w.length > 3);
+                        keywords.push(...words);
+
+                        // Add channel names
+                        if (item.snippet.channelTitle) {
+                            channelNames.push(item.snippet.channelTitle);
+                        }
+                    }
+                });
+
+                // Find most common keywords
+                const keywordCounts = {};
+                keywords.forEach(keyword => {
+                    keywordCounts[keyword] = (keywordCounts[keyword] || 0) + 1;
+                });
+
+                // Sort by frequency and filter out common words
+                const commonWords = ['the', 'and', 'for', 'that', 'with', 'from', 'this', 'have', 'will', 'your', 'more', 'than', 'other', 'about', 'which', 'their', 'when', 'make', 'them', 'just', 'like', 'what', 'time', 'new', 'all', 'how', 'out', 'can', 'who', 'get', 'said', 'one', 'two', 'part'];
+
+                const topKeywords = Object.entries(keywordCounts)
+                    .filter(([word]) => !commonWords.includes(word) && word.length > 3)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(([word]) => word);
+
+                // Combine with channel names for more personalization
+                const searchQueries = [
+                    ...topKeywords,
+                    ...(channelNames.length > 0 ? [channelNames[Math.floor(Math.random() * channelNames.length)]] : [])
+                ];
+
+                return searchQueries.filter(q => q && q.length > 0);
             }
 
             displayVideos(videos, container) {
@@ -1100,20 +1436,87 @@
                 });
             }
 
-            playVideo(videoId, snippet) {
+            async playVideo(videoId, snippet) {
                 this.currentVideo = { id: videoId, snippet };
                 document.getElementById('video-player').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
                 document.getElementById('player-title').textContent = snippet.title;
                 document.getElementById('player-stats').innerHTML = `
-                    <span>${snippet.channelTitle}</span>
-                    <span>${new Date(snippet.publishedAt).toLocaleDateString()}</span>
+                    <span id="view-count">Loading...</span>
+                    <span id="upload-date">${new Date(snippet.publishedAt).toLocaleDateString()}</span>
                 `;
+
+                // Fetch video details
+                try {
+                    const response = await fetch(`/api/video?id=${videoId}&key=${this.apiKey}`);
+                    const data = await response.json();
+
+                    if (data.items && data.items.length > 0) {
+                        const video = data.items[0];
+                        this.currentVideo.stats = video.statistics;
+                        this.currentVideo.description = video.snippet.description;
+
+                        const views = parseInt(video.statistics.viewCount).toLocaleString();
+                        document.getElementById('view-count').textContent = `${views} views`;
+                        document.getElementById('video-description').textContent = video.snippet.description;
+
+                        // Fetch channel details
+                        const channelId = snippet.channelId;
+                        await this.loadChannelInfo(channelId);
+                    }
+                } catch (error) {
+                    console.error('Error loading video details:', error);
+                }
 
                 // Add to watch history
                 this.addToHistory(videoId, snippet);
 
                 // Switch to watch page
                 this.switchPage('watch');
+            }
+
+            async loadChannelInfo(channelId) {
+                try {
+                    const response = await fetch(
+                        `https://www.googleapis.com/youtube/v3/channels?id=${channelId}&part=snippet,statistics&key=${this.apiKey}`
+                    );
+                    const data = await response.json();
+
+                    if (data.items && data.items.length > 0) {
+                        const channel = data.items[0];
+                        this.currentChannel = channel;
+
+                        document.getElementById('channel-name').textContent = channel.snippet.title;
+                        document.getElementById('channel-subs').textContent =
+                            `${parseInt(channel.statistics.subscriberCount).toLocaleString()} subscribers`;
+
+                        if (channel.snippet.thumbnails.default?.url) {
+                            document.getElementById('channel-avatar').innerHTML =
+                                `<img src="${channel.snippet.thumbnails.default.url}" alt="Channel">`;
+                        }
+
+                        // Update subscribe button
+                        const isSubscribed = this.subscriptions.some(sub => sub.id === channelId);
+                        const subscribeBtn = document.getElementById('subscribe-btn');
+                        if (isSubscribed) {
+                            subscribeBtn.classList.add('subscribed');
+                            subscribeBtn.textContent = 'Subscribed';
+                        } else {
+                            subscribeBtn.classList.remove('subscribed');
+                            subscribeBtn.textContent = 'Subscribe';
+                        }
+
+                        // Update like button state
+                        const likeBtn = document.getElementById('like-btn');
+                        const videoId = this.currentVideo.id;
+                        if (this.likes.includes(videoId)) {
+                            likeBtn.classList.add('active');
+                        } else {
+                            likeBtn.classList.remove('active');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading channel info:', error);
+                }
             }
 
             addToHistory(videoId, snippet) {
@@ -1165,8 +1568,74 @@
             }
 
             likeVideo() {
+                if (!this.currentVideo) return;
+
+                const videoId = this.currentVideo.id;
+                const likeBtn = document.getElementById('like-btn');
+                const isLiked = this.likes.includes(videoId);
+
+                if (isLiked) {
+                    this.likes = this.likes.filter(id => id !== videoId);
+                    likeBtn.classList.remove('active');
+                } else {
+                    this.likes.push(videoId);
+                    likeBtn.classList.add('active');
+                }
+
+                localStorage.setItem('likes', JSON.stringify(this.likes));
+                this.showAlert(isLiked ? 'Removed like' : 'Video liked!', 'success');
+            }
+
+            dislikeVideo() {
                 if (this.currentVideo) {
-                    this.showAlert('Video liked!', 'success');
+                    this.showAlert('Video disliked', 'info');
+                }
+            }
+
+            shareVideo() {
+                if (!this.currentVideo) return;
+
+                const videoId = this.currentVideo.id;
+                const videoUrl = `https://youtu.be/${videoId}`;
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: this.currentVideo.snippet.title,
+                        url: videoUrl
+                    }).catch(err => console.log('Share failed:', err));
+                } else {
+                    navigator.clipboard.writeText(videoUrl);
+                    this.showAlert('Video link copied!', 'success');
+                }
+            }
+
+            toggleSubscription() {
+                if (!this.currentChannel) return;
+
+                const channelId = this.currentChannel.id;
+                const isSubscribed = this.subscriptions.some(sub => sub.id === channelId);
+
+                if (isSubscribed) {
+                    this.subscriptions = this.subscriptions.filter(sub => sub.id !== channelId);
+                } else {
+                    this.subscriptions.push({
+                        id: channelId,
+                        name: this.currentChannel.snippet.title,
+                        thumbnail: this.currentChannel.snippet.thumbnails.default?.url
+                    });
+                }
+
+                localStorage.setItem('subscriptions', JSON.stringify(this.subscriptions));
+
+                const subscribeBtn = document.getElementById('subscribe-btn');
+                if (isSubscribed) {
+                    subscribeBtn.classList.remove('subscribed');
+                    subscribeBtn.textContent = 'Subscribe';
+                    this.showAlert('Unsubscribed', 'info');
+                } else {
+                    subscribeBtn.classList.add('subscribed');
+                    subscribeBtn.textContent = 'Subscribed';
+                    this.showAlert('Subscribed!', 'success');
                 }
             }
 
